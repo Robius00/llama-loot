@@ -3,11 +3,11 @@ import './App.css';
 
 function App() {
   // ==========================================
-  // ⚙️ TASK CONFIGURATION BOX (রোজ শুধু এই লিংকগুলো পরিবর্তন করবেন)
+  // CONFIGURATION BOX
   // ==========================================
   const CONFIG = {
     botName: "Llama Loot",
-    botUsername: "YourLlamaLootBot", // ⚠️ আপনার আসল টেলিগ্রাম বটের ইউজারনেম এখানে দিন (যেমন: LlamaLoot_bot)
+    botUsername: "YourLlamaLootBot", 
     monetagSmartlink: "https://your-monetag-smartlink.com", 
     cpaContentLocker: "https://your-cpa-locker-link.com",  
     youtubeSubscribe: "https://youtube.com", 
@@ -21,9 +21,8 @@ function App() {
     return saved ? parseInt(saved, 10) : 0;
   });
   
-  const [activeTab, setActiveTab] = useState<string>('tap'); // tap, tasks, invite, profile
+  const [activeTab, setActiveTab] = useState<string>('tap'); 
 
-  // 🆔 ইউজারের জন্য একটি ইউনিক আইডি জেনারেট করা (রেফারেল ট্র্যাকিংয়ের জন্য)
   const [userId] = useState<string>(() => {
     let id = localStorage.getItem('llama_user_id');
     if (!id) {
@@ -42,7 +41,6 @@ function App() {
     localStorage.setItem('llama_coins', coins.toString());
   }, [coins]);
 
-  // ⏱️ ১৫ মিনিট পর পর Monetag পপ-আপ অ্যাড দেখানোর টাইমার
   useEffect(() => {
     const adTimer = setInterval(() => {
       if (CONFIG.monetagSmartlink) {
@@ -53,15 +51,12 @@ function App() {
     return () => clearInterval(adTimer);
   }, [CONFIG.monetagSmartlink]);
 
-  // 🔗 রেফারেল লিংক তৈরি
   const inviteLink = `https://t.me{CONFIG.botUsername}?start=ref_${userId}`;
 
-  // 🤝 বন্ধুদের ইনভাইট করার ফাংশন
   const handleInvite = () => {
-    const telegramShareUrl = `https://t.me{encodeURIComponent(inviteLink)}&text=${encodeURIComponent(`🦙 Join Llama Loot and claim +25,000 Coins instantly! 🪙`)}`;
+    const telegramShareUrl = `https://t.me{encodeURIComponent(inviteLink)}&text=${encodeURIComponent(`Join Llama Loot and claim +25,000 Coins instantly!`)}`;
     window.open(telegramShareUrl, '_blank');
     
-    // ডেমো হিসেবে রেফারেল বোনাস যোগ করা (ইউজারকে উৎসাহিত করতে)
     setTimeout(() => {
       setReferrals(prev => {
         const newCount = prev + 1;
@@ -69,23 +64,20 @@ function App() {
         return newCount;
       });
       setCoins(prev => prev + 25000);
-      alert("✨ You generated an invite link! +25,000 Coins added as a bonus!");
+      alert("Success! Invite link generated. +25,000 coins added!");
     }, 2000);
   };
 
   return (
     <div className="game-container">
-      {/* 👑 টপ ব্যালেন্স সেকশন */}
       <div className="header-section">
         <div className="coin-icon">🦙🪙</div>
         <h1 className="balance-text">{coins.toLocaleString()}</h1>
         <p className="coin-label">\$LMLOOT Tokens</p>
       </div>
 
-      {/* 📱 মেইন গেম ইন্টারফেস */}
       <div className="main-content">
         
-        {/* TAB 1: TAP TO EARN */}
         {activeTab === 'tap' && (
           <div className="tap-section">
             <button className="llama-circle-btn" onClick={() => setCoins(coins + 1)}>
@@ -95,7 +87,6 @@ function App() {
           </div>
         )}
 
-        {/* TAB 2: LOOT TASKS */}
         {activeTab === 'tasks' && (
           <div className="tasks-section">
             <h2 className="section-title">📋 Loot Tasks</h2>
@@ -147,7 +138,6 @@ function App() {
           </div>
         )}
 
-        {/* TAB 3: REFERRAL / INVITE (নতুন যুক্ত করা হয়েছে) */}
         {activeTab === 'invite' && (
           <div className="leaderboard-section">
             <h2 className="section-title">👥 Invite Friends</h2>
@@ -160,7 +150,7 @@ function App() {
 
             <div className="invite-box" style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
               <button onClick={handleInvite} className="task-btn" style={{width: '100%', padding: '14px', fontSize: '1rem', backgroundColor: '#4ade80', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold'}}>
-                🤝 Invite a Friend
+                Invite a Friend
               </button>
               
               <div style={{backgroundColor: '#1e2026', padding: '10px', borderRadius: '10px', fontSize: '0.8rem', color: '#9ca3af', wordBreak: 'break-all', border: '1px dashed #2d3139', marginTop: '10px'}}>
@@ -170,7 +160,6 @@ function App() {
           </div>
         )}
 
-        {/* TAB 4: USER PROFILE */}
         {activeTab === 'profile' && (
           <div className="profile-section">
             <h2 className="section-title">👤 Miner Profile</h2>
@@ -186,7 +175,6 @@ function App() {
 
       </div>
 
-      {/* 🗺️ বটম নেভিগেশন বার (Hamster Kombat স্টাইল) */}
       <div className="bottom-nav">
         <button className={activeTab === 'tap' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('tap')}>
           <div className="nav-icon">🦙</div>
