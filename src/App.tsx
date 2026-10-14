@@ -7,11 +7,12 @@ function App() {
   // ==========================================
   const CONFIG = {
     botName: "Llama Loot",
-    monetagSmartlink: "https://your-monetag-smartlink.com", // আপনার Monetag লিংক
-    cpaContentLocker: "https://your-cpa-locker-link.com",  // আপনার CPA লিংক
-    youtubeSubscribe: "https://youtube.com", // ক্লায়েন্টের ইউটিউব
-    facebookFollow: "https://facebook.com",      // ক্লায়েন্টের ফেসবুক
-    twitterFollow: "https://x.com",           // ক্লায়েন্টের টুইটার/X
+    botUsername: "YourLlamaLootBot", // ⚠️ আপনার আসল টেলিগ্রাম বটের ইউজারনেম এখানে দিন (যেমন: LlamaLoot_bot)
+    monetagSmartlink: "https://your-monetag-smartlink.com", 
+    cpaContentLocker: "https://your-cpa-locker-link.com",  
+    youtubeSubscribe: "https://youtube.com", 
+    facebookFollow: "https://facebook.com",      
+    twitterFollow: "https://x.com",           
   };
   // ==========================================
 
@@ -20,7 +21,22 @@ function App() {
     return saved ? parseInt(saved, 10) : 0;
   });
   
-  const [activeTab, setActiveTab] = useState<string>('tap'); // tap, tasks, profile, leaderboard
+  const [activeTab, setActiveTab] = useState<string>('tap'); // tap, tasks, invite, profile
+
+  // 🆔 ইউজারের জন্য একটি ইউনিক আইডি জেনারেট করা (রেফারেল ট্র্যাকিংয়ের জন্য)
+  const [userId] = useState<string>(() => {
+    let id = localStorage.getItem('llama_user_id');
+    if (!id) {
+      id = Math.floor(100000 + Math.random() * 900000).toString();
+      localStorage.setItem('llama_user_id', id);
+    }
+    return id;
+  });
+
+  const [referrals, setReferrals] = useState<number>(() => {
+    const saved = localStorage.getItem('llama_ref_count');
+    return saved ? parseInt(saved, 10) : 0;
+  });
 
   useEffect(() => {
     localStorage.setItem('llama_coins', coins.toString());
@@ -32,10 +48,30 @@ function App() {
       if (CONFIG.monetagSmartlink) {
         window.open(CONFIG.monetagSmartlink, "_blank");
       }
-    }, 15 * 60 * 1000); // 15 Minutes
+    }, 15 * 60 * 1000); 
 
     return () => clearInterval(adTimer);
   }, [CONFIG.monetagSmartlink]);
+
+  // 🔗 রেফারেল লিংক তৈরি
+  const inviteLink = `https://t.me{CONFIG.botUsername}?start=ref_${userId}`;
+
+  // 🤝 বন্ধুদের ইনভাইট করার ফাংশন
+  const handleInvite = () => {
+    const telegramShareUrl = `https://t.me{encodeURIComponent(inviteLink)}&text=${encodeURIComponent(`🦙 Join Llama Loot and claim +25,000 Coins instantly! 🪙`)}`;
+    window.open(telegramShareUrl, '_blank');
+    
+    // ডেমো হিসেবে রেফারেল বোনাস যোগ করা (ইউজারকে উৎসাহিত করতে)
+    setTimeout(() => {
+      setReferrals(prev => {
+        const newCount = prev + 1;
+        localStorage.setItem('llama_ref_count', newCount.toString());
+        return newCount;
+      });
+      setCoins(prev => prev + 25000);
+      alert("✨ You generated an invite link! +25,000 Coins added as a bonus!");
+    }, 2000);
+  };
 
   return (
     <div className="game-container">
@@ -43,7 +79,7 @@ function App() {
       <div className="header-section">
         <div className="coin-icon">🦙🪙</div>
         <h1 className="balance-text">{coins.toLocaleString()}</h1>
-        <p className="coin-label">$LMLOOT Tokens</p>
+        <p className="coin-label">\$LMLOOT Tokens</p>
       </div>
 
       {/* 📱 মেইন গেম ইন্টারফেস */}
@@ -59,12 +95,12 @@ function App() {
           </div>
         )}
 
+        {/* TAB 2: LOOT TASKS */}
         {activeTab === 'tasks' && (
           <div className="tasks-section">
             <h2 className="section-title">📋 Loot Tasks</h2>
             <p className="section-subtitle">Complete sponsored tasks to claim big rewards!</p>
             
-            {/* CPA Task */}
             <div className="task-card vip-task">
               <div className="task-info">
                 <span className="task-icon">🎁</span>
@@ -76,7 +112,6 @@ function App() {
               <a href={CONFIG.cpaContentLocker} target="_blank" rel="noreferrer" className="task-btn">Loot</a>
             </div>
 
-            {/* YouTube Task */}
             <div className="task-card">
               <div className="task-info">
                 <span className="task-icon">🔴</span>
@@ -88,7 +123,6 @@ function App() {
               <a href={CONFIG.youtubeSubscribe} target="_blank" rel="noreferrer" className="task-btn claim">Subscribe</a>
             </div>
 
-            {/* Facebook Task */}
             <div className="task-card">
               <div className="task-info">
                 <span className="task-icon">🔵</span>
@@ -100,7 +134,6 @@ function App() {
               <a href={CONFIG.facebookFollow} target="_blank" rel="noreferrer" className="task-btn claim">Follow</a>
             </div>
 
-            {/* Twitter Task */}
             <div className="task-card">
               <div className="task-info">
                 <span className="task-icon">🐦</span>
@@ -114,16 +147,25 @@ function App() {
           </div>
         )}
 
-        {/* TAB 3: LEADERBOARD */}
-        {activeTab === 'leaderboard' && (
+        {/* TAB 3: REFERRAL / INVITE (নতুন যুক্ত করা হয়েছে) */}
+        {activeTab === 'invite' && (
           <div className="leaderboard-section">
-            <h2 className="section-title">🏆 Top Looters</h2>
-            <div className="leaderboard-list">
-              <div className="leader-item global-top"><span>🥇 CryptoWhale</span><span>9,450,000</span></div>
-              <div className="leader-item global-top"><span>🥈 LlamaKing</span><span>7,120,000</span></div>
-              <div className="leader-item global-top"><span>🥉 TonMaster</span><span>5,890,000</span></div>
-              <div className="leader-item"><span>4. Alex_Crypto</span><span>4,200,000</span></div>
-              <div className="leader-item"><span>5. LMLoot_Fan</span><span>3,500,000</span></div>
+            <h2 className="section-title">👥 Invite Friends</h2>
+            <p className="section-subtitle">Earn +25,000 Coins for every friend you invite!</p>
+            
+            <div className="profile-card" style={{textAlign: 'center', marginBottom: '20px'}}>
+              <h3 style={{color: '#4ade80', margin: '5px 0'}}>{referrals} Friends Invited</h3>
+              <p style={{fontSize: '0.85rem', color: '#9ca3af'}}>Total Referral Earnings: {(referrals * 25000).toLocaleString()} Coins</p>
+            </div>
+
+            <div className="invite-box" style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+              <button onClick={handleInvite} className="task-btn" style={{width: '100%', padding: '14px', fontSize: '1rem', backgroundColor: '#4ade80', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold'}}>
+                🤝 Invite a Friend
+              </button>
+              
+              <div style={{backgroundColor: '#1e2026', padding: '10px', borderRadius: '10px', fontSize: '0.8rem', color: '#9ca3af', wordBreak: 'break-all', border: '1px dashed #2d3139', marginTop: '10px'}}>
+                <strong>Your Link:</strong><br/>{inviteLink}
+              </div>
             </div>
           </div>
         )}
@@ -133,6 +175,7 @@ function App() {
           <div className="profile-section">
             <h2 className="section-title">👤 Miner Profile</h2>
             <div className="profile-card">
+              <div className="profile-row"><span>User ID:</span> <span>#{userId}</span></div>
               <div className="profile-row"><span>Status:</span> <span className="status-badge">Active ⚡</span></div>
               <div className="profile-row"><span>League:</span> <span>Bronze Llama 🥉</span></div>
               <div className="profile-row"><span>Total Taps:</span> <span>{coins}</span></div>
@@ -153,9 +196,9 @@ function App() {
           <div className="nav-icon">📋</div>
           <span>Tasks</span>
         </button>
-        <button className={activeTab === 'leaderboard' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('leaderboard')}>
-          <div className="nav-icon">🏆</div>
-          <span>Top</span>
+        <button className={activeTab === 'invite' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('invite')}>
+          <div className="nav-icon">👥</div>
+          <span>Invite</span>
         </button>
         <button className={activeTab === 'profile' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('profile')}>
           <div className="nav-icon">👤</div>
