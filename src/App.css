@@ -1,0 +1,202 @@
+body {
+  background-color: #0b0c0e;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.game-container {
+  max-width: 425px;
+  margin: 0 auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 15px;
+  box-sizing: border-box;
+  background: radial-gradient(circle at top, #1c1d24 0%, #0b0c0e 100%);
+}
+.header-section {
+  text-align: center;
+  margin-top: 15px;
+}
+.coin-icon {
+  font-size: 2.5rem;
+}
+.balance-text {
+  font-size: 2.8rem;
+  margin: 5px 0;
+  color: #4ade80;
+  text-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+  font-weight: 800;
+}
+.coin-label {
+  color: #9ca3af;
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+.tap-section, .tasks-section, .leaderboard-section, .profile-section {
+  width: 100%;
+  animation: fadeIn 0.3s ease-in-out;
+}
+.llama-circle-btn {
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #10b981, #047857);
+  border: 6px solid #1f2937;
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.3), inset 0 -8px 0 rgba(0,0,0,0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 30px auto;
+  transition: transform 0.05s ease;
+}
+.llama-circle-btn:active {
+  transform: scale(0.92);
+}
+.llama-emoji {
+  font-size: 6rem;
+}
+.tap-instruction {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 1rem;
+}
+.section-title {
+  font-size: 1.5rem;
+  margin: 0 0 5px 0;
+  text-align: center;
+}
+.section-subtitle {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  margin: 0 0 20px 0;
+}
+.task-card {
+  background-color: #1e2026;
+  padding: 12px 15px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #2d3139;
+}
+.vip-task {
+  border: 1px solid #4ade80;
+  background: linear-gradient(90deg, #1e2026 0%, #14281f 100%);
+}
+.task-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.task-info h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.task-info p {
+  margin: 3px 0 0 0;
+  font-size: 0.8rem;
+  color: #4ade80;
+}
+.task-icon {
+  font-size: 1.5rem;
+}
+.task-btn {
+  background-color: #4ade80;
+  color: #000;
+  padding: 6px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+.task-btn.claim {
+  background-color: #3b82f6;
+  color: #fff;
+}
+.leaderboard-list {
+  background-color: #1e2026;
+  border-radius: 14px;
+  padding: 10px;
+}
+.leader-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 10px;
+  border-bottom: 1px solid #2d3139;
+  font-size: 0.95rem;
+}
+.leader-item:last-child {
+  border-bottom: none;
+}
+.global-top {
+  font-weight: bold;
+  color: #f3ba2f;
+}
+.profile-card {
+  background-color: #1e2026;
+  border-radius: 14px;
+  padding: 15px;
+}
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #2d3139;
+  font-size: 0.95rem;
+}
+.profile-row:last-child {
+  border-bottom: none;
+}
+.status-badge {
+  color: #4ade80;
+  font-weight: bold;
+}
+.verify-text {
+  color: #3b82f6;
+}
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #1e2026;
+  padding: 10px;
+  border-radius: 18px;
+  border: 1px solid #2d3139;
+}
+.nav-item {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+}
+.nav-icon {
+  font-size: 1.2rem;
+}
+.nav-item.active {
+  color: #4ade80;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
