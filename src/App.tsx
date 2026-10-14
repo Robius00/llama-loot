@@ -7,7 +7,7 @@ function App() {
   // ==========================================
   const CONFIG = {
     botName: "Llama Loot",
-    botUsername: "YourLlamaLootBot", 
+    botUsername: "YourLlamaLootBot", // আপনার আসল টেলিগ্রাম বটের ইউজারনেম এখানে দিন
     monetagSmartlink: "https://your-monetag-smartlink.com", 
     cpaContentLocker: "https://your-cpa-locker-link.com",  
     youtubeSubscribe: "https://youtube.com", 
@@ -64,20 +64,22 @@ function App() {
         return newCount;
       });
       setCoins(prev => prev + 25000);
-      alert("Success! Invite link generated. +25,000 coins added!");
     }, 2000);
   };
 
   return (
     <div className="game-container">
+      {/* 👑 টপ ব্যালেন্স সেকশন */}
       <div className="header-section">
         <div className="coin-icon">🦙🪙</div>
         <h1 className="balance-text">{coins.toLocaleString()}</h1>
         <p className="coin-label">\$LMLOOT Tokens</p>
       </div>
 
+      {/* 📱 মেইন কন্টেন্ট এরিয়া */}
       <div className="main-content">
         
+        {/* TAB 1: TAP TO EARN */}
         {activeTab === 'tap' && (
           <div className="tap-section">
             <button className="llama-circle-btn" onClick={() => setCoins(coins + 1)}>
@@ -87,6 +89,7 @@ function App() {
           </div>
         )}
 
+        {/* TAB 2: LOOT TASKS */}
         {activeTab === 'tasks' && (
           <div className="tasks-section">
             <h2 className="section-title">📋 Loot Tasks</h2>
@@ -138,8 +141,9 @@ function App() {
           </div>
         )}
 
+        {/* TAB 3: INVITE FRIENDS */}
         {activeTab === 'invite' && (
-          <div className="leaderboard-section">
+          <div className="tasks-section">
             <h2 className="section-title">👥 Invite Friends</h2>
             <p className="section-subtitle">Earn +25,000 Coins for every friend you invite!</p>
             
@@ -160,6 +164,22 @@ function App() {
           </div>
         )}
 
+        {/* TAB 4: LEADERBOARD */}
+        {activeTab === 'leaderboard' && (
+          <div className="leaderboard-section">
+            <h2 className="section-title">🏆 Top Looters</h2>
+            <p className="section-subtitle">Global rankings of the top Llama minners!</p>
+            <div className="leaderboard-list">
+              <div className="leader-item global-top"><span>🥇 CryptoWhale</span><span>9,450,000</span></div>
+              <div className="leader-item global-top"><span>🥈 LlamaKing</span><span>7,120,000</span></div>
+              <div className="leader-item global-top"><span>🥉 TonMaster</span><span>5,890,000</span></div>
+              <div className="leader-item"><span>4. Alex_Crypto</span><span>4,200,000</span></div>
+              <div className="leader-item"><span>5. LMLoot_Fan</span><span>3,500,000</span></div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: USER PROFILE */}
         {activeTab === 'profile' && (
           <div className="profile-section">
             <h2 className="section-title">👤 Miner Profile</h2>
@@ -175,22 +195,27 @@ function App() {
 
       </div>
 
-      <div className="bottom-nav">
+      {/* 🗺️ ৫ বোতামের আপডেট করা নেভিগেশন বার */}
+      <div className="bottom-nav" style={{gap: '5px', padding: '8px'}}>
         <button className={activeTab === 'tap' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('tap')}>
           <div className="nav-icon">🦙</div>
-          <span>Loot</span>
+          <span style={{fontSize: '0.7rem'}}>Loot</span>
         </button>
         <button className={activeTab === 'tasks' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('tasks')}>
           <div className="nav-icon">📋</div>
-          <span>Tasks</span>
+          <span style={{fontSize: '0.7rem'}}>Tasks</span>
         </button>
         <button className={activeTab === 'invite' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('invite')}>
           <div className="nav-icon">👥</div>
-          <span>Invite</span>
+          <span style={{fontSize: '0.7rem'}}>Invite</span>
+        </button>
+        <button className={activeTab === 'leaderboard' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('leaderboard')}>
+          <div className="nav-icon">🏆</div>
+          <span style={{fontSize: '0.7rem'}}>Top</span>
         </button>
         <button className={activeTab === 'profile' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('profile')}>
           <div className="nav-icon">👤</div>
-          <span>Profile</span>
+          <span style={{fontSize: '0.7rem'}}>Profile</span>
         </button>
       </div>
     </div>
