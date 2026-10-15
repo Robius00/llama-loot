@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
-interface TapEffect {
-  id: number;
-  x: number;
-  y: number;
-}
-
 function App() {
   const CONFIG = {
     botName: "Llama Loot",
@@ -19,20 +13,20 @@ function App() {
   };
   const MAX_ENERGY = 500; 
 
-  const [coins, setCoins] = useState<number>(() => {
+  const [coins, setCoins] = useState(() => {
     const saved = localStorage.getItem('llama_coins');
     return saved ? parseInt(saved, 10) : 0;
   });
   
-  const [energy, setEnergy] = useState<number>(() => {
+  const [energy, setEnergy] = useState(() => {
     const saved = localStorage.getItem('llama_energy');
     return saved ? parseInt(saved, 10) : MAX_ENERGY;
   });
 
-  const [activeTab, setActiveTab] = useState<string>('tap'); 
-  const [tapEffects, setTapEffects] = useState<TapEffect[]>([]);
+  const [activeTab, setActiveTab] = useState('tap'); 
+  const [tapEffects, setTapEffects] = useState([]);
 
-  const [userId] = useState<string>(() => {
+  const [userId] = useState(() => {
     let id = localStorage.getItem('llama_user_id');
     if (!id) {
       id = Math.floor(100000 + Math.random() * 900000).toString();
@@ -41,7 +35,7 @@ function App() {
     return id;
   });
 
-  const [referrals, setReferrals] = useState<number>(() => {
+  const [referrals, setReferrals] = useState(() => {
     const saved = localStorage.getItem('llama_ref_count');
     return saved ? parseInt(saved, 10) : 0;
   });
@@ -74,7 +68,7 @@ function App() {
     return () => clearInterval(adTimer);
   }, [CONFIG.monetagSmartlink]);
 
-  const handleTap = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleTap = (e) => {
     if (energy > 0) {
       setCoins((prev) => prev + 1);
       setEnergy((prev) => prev - 1);
@@ -82,7 +76,7 @@ function App() {
       const rect = e.currentTarget.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      const newEffect: TapEffect = { id: Date.now(), x, y };
+      const newEffect = { id: Date.now(), x, y };
       
       setTapEffects((prev) => [...prev, newEffect]);
     }
@@ -125,7 +119,7 @@ function App() {
       <div className="header-section">
         <div className="coin-icon">🦙🪙</div>
         <h1 className="balance-text">{coins.toLocaleString()}</h1>
-        <p className="coin-label">\$LMLOOT Tokens</p>
+        <p className="coin-label">$LMLOOT Tokens</p>
       </div>
 
       <div className="main-content">
@@ -149,7 +143,7 @@ function App() {
                 <div className="energy-bar-fill" style={{ width: `${(energy / MAX_ENERGY) * 100}%` }}></div>
               </div>
               
-              <button className="video-refill-btn" onClick={handleVideoRefill}>
+              <button className="video-refill-btn" onClick={handleVideoRefill} style={{ marginTop: '12px' }}>
                 📺 Watch Ad (Instant Refill ⚡)
               </button>
             </div>
@@ -262,3 +256,5 @@ function App() {
         <button className={activeTab === 'tap' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('tap')}>
           <div className="nav-icon">🦙</div>
           <span>Loot</span>
+        </button>
+        <button className={activeTab === 'tasks' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('tasks')}>
