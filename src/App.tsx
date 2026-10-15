@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
+interface TapEffect {
+  id: number;
+  x: number;
+  y: number;
+}
+
 function App() {
   const CONFIG = {
     botName: "Llama Loot",
@@ -11,7 +17,7 @@ function App() {
     facebookFollow: "https://facebook.com",      
     twitterFollow: "https://x.com",           
   };
-  const MAX_ENERGY = 1000;
+  const MAX_ENERGY = 500; 
 
   const [coins, setCoins] = useState<number>(() => {
     const saved = localStorage.getItem('llama_coins');
@@ -24,6 +30,7 @@ function App() {
   });
 
   const [activeTab, setActiveTab] = useState<string>('tap'); 
+  const [tapEffects, setTapEffects] = useState<TapEffect[]>([]);
 
   const [userId] = useState<string>(() => {
     let id = localStorage.getItem('llama_user_id');
@@ -48,11 +55,11 @@ function App() {
     const refillTimer = setInterval(() => {
       setEnergy((prevEnergy) => {
         if (prevEnergy < MAX_ENERGY) {
-          return Math.min(prevEnergy + 3, MAX_ENERGY);
+          return Math.min(prevEnergy + 1, MAX_ENERGY);
         }
         return prevEnergy;
       });
-    }, 1000);
+    }, 1500);
 
     return () => clearInterval(refillTimer);
   }, []);
@@ -67,11 +74,34 @@ function App() {
     return () => clearInterval(adTimer);
   }, [CONFIG.monetagSmartlink]);
 
-  const handleTap = () => {
+  const handleTap = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (energy > 0) {
       setCoins((prev) => prev + 1);
       setEnergy((prev) => prev - 1);
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const newEffect: TapEffect = { id: Date.now(), x, y };
+      
+      setTapEffects((prev) => [...prev, newEffect]);
     }
+  };
+
+  useEffect(() => {
+    if (tapEffects.length > 0) {
+      const timer = setTimeout(() => {
+        setTapEffects((prev) => prev.slice(1));
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [tapEffects]);
+
+  const handleVideoRefill = () => {
+    if (CONFIG.monetagSmartlink) {
+      window.open(CONFIG.monetagSmartlink, "_blank");
+    }
+    setEnergy(MAX_ENERGY);
   };
 
   const inviteLink = `https://t.me{CONFIG.botUsername}?start=ref_${userId}`;
@@ -104,6 +134,11 @@ function App() {
           <div className="tap-section">
             <button className="llama-circle-btn" onClick={handleTap} disabled={energy === 0}>
               <span className="llama-emoji">🦙</span>
+              {tapEffects.map((effect) => (
+                <span key={effect.id} className="floating-plus-one" style={{ left: `${effect.x}px`, top: `${effect.y}px` }}>
+                  +1
+                </span>
+              ))}
             </button>
             
             <div className="energy-container">
@@ -113,6 +148,10 @@ function App() {
               <div className="energy-bar-bg">
                 <div className="energy-bar-fill" style={{ width: `${(energy / MAX_ENERGY) * 100}%` }}></div>
               </div>
+              
+              <button className="video-refill-btn" onClick={handleVideoRefill}>
+                📺 Watch Ad (Instant Refill ⚡)
+              </button>
             </div>
           </div>
         )}
@@ -223,26 +262,3 @@ function App() {
         <button className={activeTab === 'tap' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('tap')}>
           <div className="nav-icon">🦙</div>
           <span>Loot</span>
-        </button>
-        <button className={activeTab === 'tasks' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('tasks')}>
-          <div className="nav-icon">📋</div>
-          <span>Tasks</span>
-        </button>
-        <button className={activeTab === 'invite' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('invite')}>
-          <div className="nav-icon">👥</div>
-          <span>Invite</span>
-        </button>
-        <button className={activeTab === 'leaderboard' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('leaderboard')}>
-          <div className="nav-icon">🏆</div>
-          <span>Top</span>
-        </button>
-        <button className={activeTab === 'profile' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('profile')}>
-          <div className="nav-icon">👤</div>
-          <span>Profile</span>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-export default App;
