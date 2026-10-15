@@ -2,25 +2,27 @@ import { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  // ==========================================
-  // CONFIGURATION BOX
-  // ==========================================
   const CONFIG = {
     botName: "Llama Loot",
-    botUsername: "YourLlamaLootBot", // আপনার আসল টেলিগ্রাম বটের ইউজারনেম এখানে দিন
+    botUsername: "YourLlamaLootBot", 
     monetagSmartlink: "https://your-monetag-smartlink.com", 
     cpaContentLocker: "https://your-cpa-locker-link.com",  
     youtubeSubscribe: "https://youtube.com", 
     facebookFollow: "https://facebook.com",      
     twitterFollow: "https://x.com",           
   };
-  // ==========================================
+  const MAX_ENERGY = 1000;
 
   const [coins, setCoins] = useState<number>(() => {
     const saved = localStorage.getItem('llama_coins');
     return saved ? parseInt(saved, 10) : 0;
   });
   
+  const [energy, setEnergy] = useState<number>(() => {
+    const saved = localStorage.getItem('llama_energy');
+    return saved ? parseInt(saved, 10) : MAX_ENERGY;
+  });
+
   const [activeTab, setActiveTab] = useState<string>('tap'); 
 
   const [userId] = useState<string>(() => {
@@ -39,7 +41,21 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem('llama_coins', coins.toString());
-  }, [coins]);
+    localStorage.setItem('llama_energy', energy.toString());
+  }, [coins, energy]);
+
+  useEffect(() => {
+    const refillTimer = setInterval(() => {
+      setEnergy((prevEnergy) => {
+        if (prevEnergy < MAX_ENERGY) {
+          return Math.min(prevEnergy + 3, MAX_ENERGY);
+        }
+        return prevEnergy;
+      });
+    }, 1000);
+
+    return () => clearInterval(refillTimer);
+  }, []);
 
   useEffect(() => {
     const adTimer = setInterval(() => {
@@ -51,10 +67,17 @@ function App() {
     return () => clearInterval(adTimer);
   }, [CONFIG.monetagSmartlink]);
 
+  const handleTap = () => {
+    if (energy > 0) {
+      setCoins((prev) => prev + 1);
+      setEnergy((prev) => prev - 1);
+    }
+  };
+
   const inviteLink = `https://t.me{CONFIG.botUsername}?start=ref_${userId}`;
 
   const handleInvite = () => {
-    const telegramShareUrl = `https://t.me{encodeURIComponent(inviteLink)}&text=${encodeURIComponent(`Join Llama Loot and claim +25,000 Coins instantly!`)}`;
+    const telegramShareUrl = `https://t.me{encodeURIComponent(inviteLink)}&text=${encodeURIComponent(`Join Llama Loot and claim +2,500 Coins instantly!`)}`;
     window.open(telegramShareUrl, '_blank');
     
     setTimeout(() => {
@@ -63,33 +86,37 @@ function App() {
         localStorage.setItem('llama_ref_count', newCount.toString());
         return newCount;
       });
-      setCoins(prev => prev + 25000);
+      setCoins(prev => prev + 2500);
     }, 2000);
   };
 
   return (
     <div className="game-container">
-      {/* 👑 টপ ব্যালেন্স সেকশন */}
       <div className="header-section">
         <div className="coin-icon">🦙🪙</div>
         <h1 className="balance-text">{coins.toLocaleString()}</h1>
         <p className="coin-label">\$LMLOOT Tokens</p>
       </div>
 
-      {/* 📱 মেইন কন্টেন্ট এরিয়া */}
       <div className="main-content">
         
-        {/* TAB 1: TAP TO EARN */}
         {activeTab === 'tap' && (
           <div className="tap-section">
-            <button className="llama-circle-btn" onClick={() => setCoins(coins + 1)}>
+            <button className="llama-circle-btn" onClick={handleTap} disabled={energy === 0}>
               <span className="llama-emoji">🦙</span>
             </button>
-            <p className="tap-instruction">Tap the Llama to Loot Coins!</p>
+            
+            <div className="energy-container">
+              <div className="energy-header">
+                <span>⚡ {energy} / {MAX_ENERGY}</span>
+              </div>
+              <div className="energy-bar-bg">
+                <div className="energy-bar-fill" style={{ width: `${(energy / MAX_ENERGY) * 100}%` }}></div>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* TAB 2: LOOT TASKS */}
         {activeTab === 'tasks' && (
           <div className="tasks-section">
             <h2 className="section-title">📋 Loot Tasks</h2>
@@ -100,7 +127,7 @@ function App() {
                 <span className="task-icon">🎁</span>
                 <div>
                   <h4>Daily Reward Chest</h4>
-                  <p>+50,000 Coins</p>
+                  <p>+1,000 Coins</p>
                 </div>
               </div>
               <a href={CONFIG.cpaContentLocker} target="_blank" rel="noreferrer" className="task-btn">Loot</a>
@@ -111,7 +138,7 @@ function App() {
                 <span className="task-icon">🔴</span>
                 <div>
                   <h4>Subscribe Official YouTube</h4>
-                  <p>+20,000 Coins</p>
+                  <p>+1,000 Coins</p>
                 </div>
               </div>
               <a href={CONFIG.youtubeSubscribe} target="_blank" rel="noreferrer" className="task-btn claim">Subscribe</a>
@@ -122,7 +149,7 @@ function App() {
                 <span className="task-icon">🔵</span>
                 <div>
                   <h4>Follow Partner Facebook</h4>
-                  <p>+15,000 Coins</p>
+                  <p>+1,000 Coins</p>
                 </div>
               </div>
               <a href={CONFIG.facebookFollow} target="_blank" rel="noreferrer" className="task-btn claim">Follow</a>
@@ -133,7 +160,7 @@ function App() {
                 <span className="task-icon">🐦</span>
                 <div>
                   <h4>Follow Official Twitter/X</h4>
-                  <p>+15,000 Coins</p>
+                  <p>+1,000 Coins</p>
                 </div>
               </div>
               <a href={CONFIG.twitterFollow} target="_blank" rel="noreferrer" className="task-btn claim">Follow</a>
@@ -141,34 +168,32 @@ function App() {
           </div>
         )}
 
-        {/* TAB 3: INVITE FRIENDS */}
         {activeTab === 'invite' && (
           <div className="tasks-section">
             <h2 className="section-title">👥 Invite Friends</h2>
-            <p className="section-subtitle">Earn +25,000 Coins for every friend you invite!</p>
+            <p className="section-subtitle">Earn +2,500 Coins for every friend you invite!</p>
             
             <div className="profile-card" style={{textAlign: 'center', marginBottom: '20px'}}>
-              <h3 style={{color: '#4ade80', margin: '5px 0'}}>{referrals} Friends Invited</h3>
-              <p style={{fontSize: '0.85rem', color: '#9ca3af'}}>Total Referral Earnings: {(referrals * 25000).toLocaleString()} Coins</p>
+              <h3 style={{color: '#f3ba2f', margin: '5px 0'}}>{referrals} Friends Invited</h3>
+              <p style={{fontSize: '0.85rem', color: '#9ca3af'}}>Total Referral Earnings: {(referrals * 2500).toLocaleString()} Coins</p>
             </div>
 
             <div className="invite-box" style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
-              <button onClick={handleInvite} className="task-btn" style={{width: '100%', padding: '14px', fontSize: '1rem', backgroundColor: '#4ade80', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold'}}>
+              <button onClick={handleInvite} className="task-btn-gold">
                 Invite a Friend
               </button>
               
-              <div style={{backgroundColor: '#1e2026', padding: '10px', borderRadius: '10px', fontSize: '0.8rem', color: '#9ca3af', wordBreak: 'break-all', border: '1px dashed #2d3139', marginTop: '10px'}}>
+              <div style={{backgroundColor: '#1e2026', padding: '10px', borderRadius: '10px', fontSize: '0.8rem', color: '#9ca3af', wordBreak: 'break-all', border: '1px dashed #f3ba2f', marginTop: '10px'}}>
                 <strong>Your Link:</strong><br/>{inviteLink}
               </div>
             </div>
           </div>
         )}
 
-        {/* TAB 4: LEADERBOARD */}
         {activeTab === 'leaderboard' && (
           <div className="leaderboard-section">
             <h2 className="section-title">🏆 Top Looters</h2>
-            <p className="section-subtitle">Global rankings of the top Llama minners!</p>
+            <p className="section-subtitle">Global rankings of the top Llama miners!</p>
             <div className="leaderboard-list">
               <div className="leader-item global-top"><span>🥇 CryptoWhale</span><span>9,450,000</span></div>
               <div className="leader-item global-top"><span>🥈 LlamaKing</span><span>7,120,000</span></div>
@@ -179,43 +204,41 @@ function App() {
           </div>
         )}
 
-        {/* TAB 5: USER PROFILE */}
         {activeTab === 'profile' && (
           <div className="profile-section">
             <h2 className="section-title">👤 Miner Profile</h2>
             <div className="profile-card">
               <div className="profile-row"><span>User ID:</span> <span>#{userId}</span></div>
-              <div className="profile-row"><span>Status:</span> <span className="status-badge">Active ⚡</span></div>
-              <div className="profile-row"><span>League:</span> <span>Bronze Llama 🥉</span></div>
+              <div className="profile-row"><span>Status:</span> <span className="status-badge">Active</span></div>
+              <div className="profile-row"><span>League:</span> <span>Bronze Llama</span></div>
               <div className="profile-row"><span>Total Taps:</span> <span>{coins}</span></div>
-              <div className="profile-row"><span>Weekly Giveaway:</span> <span className="verify-text">Qualified ✅</span></div>
+              <div className="profile-row"><span>Weekly Giveaway:</span> <span className="verify-text">Qualified</span></div>
             </div>
           </div>
         )}
 
       </div>
 
-      {/* 🗺️ ৫ বোতামের আপডেট করা নেভিগেশন বার */}
-      <div className="bottom-nav" style={{gap: '5px', padding: '8px'}}>
+      <div className="bottom-nav">
         <button className={activeTab === 'tap' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('tap')}>
           <div className="nav-icon">🦙</div>
-          <span style={{fontSize: '0.7rem'}}>Loot</span>
+          <span>Loot</span>
         </button>
         <button className={activeTab === 'tasks' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('tasks')}>
           <div className="nav-icon">📋</div>
-          <span style={{fontSize: '0.7rem'}}>Tasks</span>
+          <span>Tasks</span>
         </button>
         <button className={activeTab === 'invite' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('invite')}>
           <div className="nav-icon">👥</div>
-          <span style={{fontSize: '0.7rem'}}>Invite</span>
+          <span>Invite</span>
         </button>
         <button className={activeTab === 'leaderboard' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('leaderboard')}>
           <div className="nav-icon">🏆</div>
-          <span style={{fontSize: '0.7rem'}}>Top</span>
+          <span>Top</span>
         </button>
         <button className={activeTab === 'profile' ? 'nav-item active' : 'nav-item'} onClick={() => setActiveTab('profile')}>
           <div className="nav-icon">👤</div>
-          <span style={{fontSize: '0.7rem'}}>Profile</span>
+          <span>Profile</span>
         </button>
       </div>
     </div>
